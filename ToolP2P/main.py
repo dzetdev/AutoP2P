@@ -9,25 +9,22 @@ app = FastAPI(
     title="Bybit P2P API",
     description="API documentation for Bybit P2P services",
     version="1.0",
-    docs_url="/swagger",  # Đổi đường dẫn Swagger
-    redoc_url="/redoc"    # Đổi đường dẫn Redoc
+    docs_url="/swagger",
+    redoc_url="/redoc"
 )
 
 
 @app.post("/p2p/info")
 def get_p2p_info():
-    """API lấy thông tin tài khoản P2P"""
     return send_request("POST", "/v5/p2p/user/personal/info", body={})
 
 
 @app.get("/server-time")
 def get_time():
-    """API lấy server time từ Bybit"""
     return send_request("GET", "/v5/time")
 
 @app.get("/wallet-balance")
 def get_wallet_balance():
-    """API lấy số dư tài khoản"""
     return send_request("POST", "/v5/account/wallet-balance")
 
 
@@ -42,7 +39,6 @@ def get_p2p_adslist(
         size: str = Query(None, description="Page size, default is 10"),
         currency_id: str = Query(None, description="Currency ID (e.g., HKD, USD, EUR)")
 ):
-    """Get P2P advertisement list"""
     body = {
         "itemId": itemId,
         "status": status,
@@ -59,9 +55,7 @@ def get_p2p_adslist(
 
 @app.post("/p2p/order-info")
 def get_p2p_order_info(orderId: str = Body(..., embed=True, description="Order ID")):
-    """
-    Get P2P order information.
-    """
+
     body = {"orderId": orderId}
     return send_request("POST", "/v5/p2p/order/info", body)
 
@@ -75,9 +69,7 @@ def get_p2p_order_simplify_list(
     tokenId: Optional[str] = Body(None, description="Token ID"),
     side: Optional[List[int]] = Body(None, description="Side (list of integers)")
 ):
-    """
-    Get simplified P2P order list.
-    """
+
     body = {
         "status": status,
         "beginTime": beginTime,
@@ -92,6 +84,11 @@ def get_p2p_order_simplify_list(
     body = {k: v for k, v in body.items() if v is not None}
 
     return send_request("POST", "/v5/p2p/order/simplifyList", body)
+
+@app.post("/p2p/pending")
+def get_p2p_pending():
+    return send_request("POST", "/v5/p2p/order/pending/simplifyList", body={})
+
 
 if __name__ == "__main__":
     import uvicorn

@@ -24,13 +24,10 @@ def get_server_time():
 
 def create_signature(timestamp: str, recv_window: str, body: dict):
     """Create signature for Bybit API request"""
-    # ✅ Chuyển body thành JSON string (sort key)
     sorted_body = json.dumps(body, sort_keys=True)
 
-    # ✅ Chuỗi để ký phải đúng thứ tự
     param_str = f"{timestamp}{API_KEY}{recv_window}{sorted_body}"
 
-    # ✅ Tạo chữ ký HMAC SHA256
     return hmac.new(
         API_SECRET.encode(),
         param_str.encode(),
@@ -46,7 +43,6 @@ def create_headers(body: dict = None):
     if body is None:
         body = {}
 
-    # ✅ Đảm bảo JSON có thứ tự keys đúng
     sorted_body = json.dumps(body, sort_keys=True)
     signature = create_signature(timestamp, recv_window, json.loads(sorted_body))
 
@@ -72,7 +68,6 @@ def send_request(method: str, endpoint: str, body: dict = None):
         if method.upper() == "GET":
             response = requests.get(url, headers=headers, params=body)
         elif method.upper() == "POST":
-            # ✅ Gửi body với JSON string sắp xếp đúng
             response = requests.post(url, headers=headers, data=json.dumps(body, sort_keys=True))
         else:
             raise ValueError("Method only supports GET or POST")
